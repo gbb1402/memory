@@ -17,6 +17,10 @@ jobs:
       - name: Build Docker image
         run: docker build -t gbb1402/memory:latest .
 
+      # Étape 3 : Lister les images présentes localement (vérification)
+      - name: List Docker images
+        run: docker images
+
   push-memory:
     needs: build-memory
     runs-on: ubuntu-latest
@@ -29,7 +33,7 @@ jobs:
       - name: Tag Docker image
         run: docker tag gbb1402/memory:latest gbb1402/memory:latest
 
-      # Étape 4 : Pousser l'image Docker vers Docker Hub
+      # Étape 5 : Pousser l'image Docker vers Docker Hub
       - name: Push Docker image
         run: docker push gbb1402/memory:latest
 
