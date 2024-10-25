@@ -1,13 +1,19 @@
+name: Memory Pipeline
+
+# Déclencher le workflow lors d'un push sur la branche develop
+on:
+  push:
+    branches:
+      - develop
+
 jobs:
   build-memory:
     runs-on: ubuntu-latest
 
     steps:
-      # Étape 1 : Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Étape 2 : Construire l'image Docker
       - name: Build Docker image
         run: docker build -t gbb1402/memory .
 
@@ -16,15 +22,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Étape 1 : Login à Docker Hub
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "gbb1402" --password-stdin
 
-      # Étape 2 : Taguer l'image avant de la pousser
       - name: Tag Docker image
         run: docker tag gbb1402/memory:latest gbb1402/memory:latest
 
-      # Étape 3 : Pousser l'image sur Docker Hub
       - name: Push Docker image
         run: docker push gbb1402/memory:latest
 
