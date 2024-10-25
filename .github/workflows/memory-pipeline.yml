@@ -61,3 +61,19 @@ jobs:
       - name: Push Docker image
         run: docker push gbb1402/memory:latest
 
+deploy-memory:
+  needs: push-memory  # Ce job se lance après le push sur Docker Hub
+  runs-on: ubuntu-latest
+  steps:
+    - name: Connexion SSH et déploiement
+      uses: appleboy/ssh-action@v0.1.2
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          docker pull gbb1402/memory:latest
+          docker stop memory-container || true  # Stoppe le conteneur existant s'il y en a un
+          docker rm memory-container || true    # Supprime le conteneur existant s'il y en a un
+          docker run -d --name memory-container -p 80:80 gbb1402/memory:latest
+
