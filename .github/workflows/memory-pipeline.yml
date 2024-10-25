@@ -1,11 +1,3 @@
-name: Memory Pipeline
-
-# Exécute le workflow à chaque push sur la branche develop
-on:
-  push:
-    branches:
-      - develop
-
 jobs:
   build-memory:
     runs-on: ubuntu-latest
@@ -28,7 +20,11 @@ jobs:
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "gbb1402" --password-stdin
 
-      # Étape 2 : Pousser l'image sur Docker Hub
+      # Étape 2 : Taguer l'image avant de la pousser
+      - name: Tag Docker image
+        run: docker tag gbb1402/memory:latest gbb1402/memory:latest
+
+      # Étape 3 : Pousser l'image sur Docker Hub
       - name: Push Docker image
-        run: docker push gbb1402/memory
+        run: docker push gbb1402/memory:latest
 
