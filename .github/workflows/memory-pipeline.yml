@@ -23,7 +23,7 @@ jobs:
 
       # Upload le fichier tar pour l'utiliser dans le job suivant
       - name: Upload Docker image
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: memory_image
           path: memory_image.tar
@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Download Docker image
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: memory_image
 
