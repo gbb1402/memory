@@ -6,22 +6,34 @@ on:
       - develop
 
 jobs:
+  # Nouveau job pour vérifier les fichiers JPEG
+  test-memory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install file command
+        run: sudo apt-get install file
+
+      - name: Check JPEG files
+        run: |
+          for img in $(find . -name "*.jpg"); do
+            file "$img";
+          done
+
   build-memory:
     runs-on: ubuntu-latest
-
+    needs: test-memory  # Ce job dépend du job test-memory
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Construire l'image Docker
       - name: Build Docker image
         run: docker build -t gbb1402/memory:latest .
 
-      # Sauvegarder l'image sous forme de fichier tar pour le partage
       - name: Save Docker image to file
         run: docker save gbb1402/memory:latest -o memory_image.tar
 
-      # Upload le fichier tar pour l'utiliser dans le job suivant
       - name: Upload Docker image
         uses: actions/upload-artifact@v3
         with:
@@ -31,25 +43,21 @@ jobs:
   push-memory:
     needs: build-memory
     runs-on: ubuntu-latest
-
     steps:
       - name: Download Docker image
         uses: actions/download-artifact@v3
         with:
           name: memory_image
 
-      # Charger l'image Docker depuis le fichier tar
       - name: Load Docker image
         run: docker load -i memory_image.tar
 
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "gbb1402" --password-stdin
 
-      # Taguer l'image pour le push
       - name: Tag Docker image
         run: docker tag gbb1402/memory:latest gbb1402/memory:latest
 
-      # Pousser l'image sur Docker Hub
       - name: Push Docker image
         run: docker push gbb1402/memory:latest
 
