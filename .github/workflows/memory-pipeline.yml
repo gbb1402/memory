@@ -13,8 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Étape 2 : Construire l'image Docker et la taguer
-      - name: Build and Tag Docker image
+      # Étape 2 : Construire et taguer l'image Docker
+      - name: Build Docker image
         run: docker build -t gbb1402/memory:latest .
 
   push-memory:
@@ -25,7 +25,11 @@ jobs:
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "gbb1402" --password-stdin
 
-      # Pousser l'image sur Docker Hub
+      # Assurer que l'image est bien taguée avant le push
+      - name: Tag Docker image
+        run: docker tag gbb1402/memory:latest gbb1402/memory:latest
+
+      # Étape 4 : Pousser l'image Docker vers Docker Hub
       - name: Push Docker image
         run: docker push gbb1402/memory:latest
 
